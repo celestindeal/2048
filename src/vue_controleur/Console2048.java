@@ -87,7 +87,7 @@ public class Console2048 extends Thread implements Observer {
             for (int j = 0; j < game.getSize(); j++) {
                 Case c = game.getCase(i, j);
                 if (c != null) {
-                    System.out.format("%5.5s", c.getValeur());
+                    System.out.format("%5.5s", c.getValue());
                 } else {
                     System.out.format("%5.5s", "");
                 }

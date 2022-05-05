@@ -1,17 +1,32 @@
 package modele;
 
 public class Case {
-    private int valeur;
+    private int value;
+    private boolean merge=false;
 
     public Case(int _valeur) {
-        valeur = _valeur;
+        this.value = _valeur;
     }
 
-    public int getValeur() {
-        return valeur;
+    public int getValue() {
+        return this.value;
     }
 
-    public void setValeur(int valeur){
-        this.valeur = valeur;
+    public void setValue(int valeur){
+        this.value = valeur;
+    }
+
+    public void doubleValue(){
+        this.value = this.value*2;
+        this.merge = true;
+    }
+
+    public boolean hasMerge(){
+        return this.merge;
+    }
+
+    public void changeMergeState(boolean m){
+        this.merge = m;
+
     }
 }
