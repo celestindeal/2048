@@ -62,7 +62,7 @@ public class Game extends Observable {
             }
             tabCases =tabCasesTurn.clone();
 
-            for (int i = 0; i < tabCases.length/2; i++) {  // transposition de la matrice
+            for (int i = 0; i < tabCases.length/2; i++) {  // inversion des colone
                 tabCases[i]=tabCasesTurn[tabCases.length-1-i];
                 tabCases[tabCases.length-1-i]=tabCasesTurn[i];
             }

@@ -12,10 +12,12 @@ import java.util.Observable;
 import java.util.Observer;
 
 public class Swing2048 extends JFrame implements Observer {
-    private static final int PIXEL_PER_SQUARE = 60;
+    private static final int PIXEL_PER_SQUARE = 160;
     // tableau de cases : i, j -> case graphique
     private JLabel[][] tabC;
     private Game game;
+
+
 
 
     public Swing2048(Game _game) {
@@ -33,7 +35,7 @@ public class Swing2048 extends JFrame implements Observer {
                 tabC[i][j] = new JLabel();
                 tabC[i][j].setBorder(border);
                 tabC[i][j].setHorizontalAlignment(SwingConstants.CENTER);
-
+                tabC[i][j].setOpaque(true);
 
                 contentPane.add(tabC[i][j]);
 
@@ -62,17 +64,16 @@ public class Swing2048 extends JFrame implements Observer {
                     if (c == null) {
 
                         tabC[i][j].setText("");
+                        tabC[i][j].setBackground(Color.white);
 
                     } else {
                         tabC[i][j].setText(c.getValue() + "");
+                        Color color = Color.red;
+
                     }
-
-
                 }
             }
         });
-
-
     }
 
     /**
