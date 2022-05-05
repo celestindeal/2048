@@ -20,40 +20,64 @@ public class Game extends Observable {
         return tabCases[i][j];
     }
 
-    public void action_joueur(Direction direction){
-        private void trie_gauche(s){
-            for (int i = 0; i < tabCases.length; i++) {
-                for (int j = 1; j < tabCases.length; j++) {
+    private void shiftLeft(){
+        for (int i = 0; i < tabCases.length; i++) {
+            for (int j = 1; j < tabCases.length; j++) {
 
-                    if(tabCases[i][j-1] == null){
-                        tabCases[i][j].setValeur(tabCases[i][j-1].getValeur());
-                        tabCases[i][j-1]=null;
-                    }else if (tabCases[i][j]== tabCases[i][j-1]){
-                        tabCases[i][j].setValeur(tabCases[i][j-1].getValeur()*2) ;
-                        tabCases[i][j-1]=null;
-                    }
-
+                if(tabCases[i][j-1] == null){
+                    tabCases[i][j].setValeur(tabCases[i][j-1].getValeur());
+                    tabCases[i][j-1]=null;
+                }else if (tabCases[i][j]== tabCases[i][j-1]){
+                    tabCases[i][j].setValeur(tabCases[i][j-1].getValeur()*2) ;
+                    tabCases[i][j-1]=null;
                 }
+
             }
         }
-        switch (direction) {
-            case Direction.haut:
-                for (int i = 0; i < tabCases.length; i++) {
+    }
 
-                }
-                break;
-            case Direction.bas:
-                action_joueur()
-                trie_gauche();
-                trouner_le_tableau()
-                break;
-            case Direction.droite:
+    public void turnLeft(int nbTurn){
+        Case[][] tabCasesTurn;
+        tabCasesTurn = new Case[tabCases.length][tabCases.length];
 
-                break;
-            case Direction.gauche:
-                break;
+        for (int i = 0; i < tabCases.length; i++) {  // transposition de la matrice
+            for (int j = 0; j < tabCases.length; j++) {
+                tabCasesTurn[i][j] = tabCases[j][i];
+            }
+        }
+        tabCases =tabCasesTurn.clone();
+
+        for (int i = 0; i < tabCases.length/2; i++) {  // transposition de la matrice
+            System.out.print(i);
+            tabCases[i]=tabCasesTurn[tabCases.length-1-i];
+            tabCases[tabCases.length-1-i]=tabCasesTurn[i];
         }
 
+        setChanged();
+        notifyObservers();
+    }
+
+    public void action_joueur(Direction direction){
+        switch (direction) {
+            case haut:
+                turnLeft(1);
+                shiftLeft();
+                turnLeft(3);
+                break;
+            case bas:
+                turnLeft(3);
+                shiftLeft();
+                turnLeft(1);
+                break;
+            case droite:
+                turnLeft(2);
+                shiftLeft();
+                turnLeft(2);
+                break;
+            case gauche:
+                shiftLeft();
+                break;
+        }
     }
 
     public void initCases() {
@@ -63,7 +87,7 @@ public class Game extends Observable {
             int filled_cases = 0;
             Random rd = new Random(4);
 
-            while(filled_cases < 2){
+            while(filled_cases < 6){
                 int i = rd.nextInt(tabCases.length);
                 int j = rd.nextInt(tabCases.length);
 
