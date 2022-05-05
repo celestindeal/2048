@@ -11,4 +11,7 @@ public class Case {
         return valeur;
     }
 
+    public void setValeur(int valeur){
+        this.valeur = valeur;
+    }
 }
