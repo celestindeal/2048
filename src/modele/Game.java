@@ -72,24 +72,24 @@ public class Game extends Observable {
 
     public void action_joueur(Direction direction){
         switch (direction) {
-            case haut:
+            case UP:
                 turnLeft(1);
                 shiftLeft();
                 turnLeft(3);
                 break;
-            case bas:
+            case DOWN:
                 turnLeft(3);
                 shiftLeft();
                 turnLeft(1);
                 break;
-            case droite:
+            case RIGHT:
                 turnLeft(2);
 
                 shiftLeft();
 
                 turnLeft(2);
                 break;
-            case gauche:
+            case LEFT:
                 shiftLeft();
                 break;
         }
@@ -103,7 +103,7 @@ public class Game extends Observable {
         new Thread(() -> {
             int filled_cases = 0;
 
-            while(filled_cases < 6){
+            while(filled_cases < 2){
                 addCase();
                 filled_cases++;
             }

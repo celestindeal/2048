@@ -4,16 +4,16 @@ public class Case {
     private int value;
     private boolean merge=false;
 
-    public Case(int _valeur) {
-        this.value = _valeur;
+    public Case(int _value) {
+        this.value = _value;
     }
 
     public int getValue() {
         return this.value;
     }
 
-    public void setValue(int valeur){
-        this.value = valeur;
+    public void setValue(int _value){
+        this.value = _value;
     }
 
     public void doubleValue(){
@@ -25,8 +25,8 @@ public class Case {
         return this.merge;
     }
 
-    public void changeMergeState(boolean m){
-        this.merge = m;
+    public void changeMergeState(boolean _merge){
+        this.merge = _merge;
 
     }
 }
