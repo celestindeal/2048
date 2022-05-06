@@ -101,23 +101,23 @@ public class Game extends Observable {
         }
     }
 
-    private boolean controlerVoisinLose(int i, int j,  boolean[] controles ){   //controles = haut droite bas gauche 
-        if (controles[0]){
+    private boolean controlNeighboursLose(int i, int j, boolean[] controls ){   //controles = haut droite bas gauche
+        if (controls[0]){
             if( tabCases[i][j].getValue() == tabCases[i][j-1].getValue()){
                 return true;          // ce n'est pas encore perdu
             }
         }
-        if (controles[1]){
+        if (controls[1]){
             if( tabCases[i][j].getValue() == tabCases[i+1][j].getValue()){
                 return true;          // ce n'est pas encore perdu
             }
         }
-        if (controles[2]){
+        if (controls[2]){
             if( tabCases[i][j].getValue() == tabCases[i][j+1].getValue()){
                 return true;          // ce n'est pas encore perdu
             }
         }
-        if (controles[3]){
+        if (controls[3]){
             if( tabCases[i][j].getValue() == tabCases[i-1][j].getValue()){
                 return true;          // ce n'est pas encore perdu
             }
@@ -144,21 +144,21 @@ public class Game extends Observable {
         if( losetemo ){ // toutes les casses sont pleinne il faut controler si il y encore une possibiliter
             for (int i = 0; i < tabCases.length; i++) {    
                 for (int j = 0; j < tabCases.length; j++) {
-                    boolean[] controles = new boolean[4];//controles = haut droite bas gauche 
-                    Arrays.fill(controles, Boolean.TRUE);
+                    boolean[] controls = new boolean[4];//controles = haut droite bas gauche
+                    Arrays.fill(controls, Boolean.TRUE);
                     if(i==0){//gauche
-                        controles[3] = false;
+                        controls[3] = false;
                     }
                     if(j==0){//haut
-                        controles[0] = false;
+                        controls[0] = false;
                     }
                     if(i==tabCases.length-1){  //droit
-                        controles[1] = false;
+                        controls[1] = false;
                     }
                     if(j==tabCases.length-1){  //bas
-                        controles[2] = false;
+                        controls[2] = false;
                     }
-                    if(controlerVoisinLose(i,j,controles)){  // si on as une solution on as pas perdu
+                    if(controlNeighboursLose(i,j,controls)){  // si on as une solution on as pas perdu
                         losetemo=false; // tu na pas perdu 
                     }
                 }
@@ -171,7 +171,7 @@ public class Game extends Observable {
         }
     }
 
-    public void action_joueur(Direction direction){
+    public void actionPlayer(Direction direction){
         if(!lose){
                switch (direction) {
             case UP:
@@ -220,40 +220,43 @@ public class Game extends Observable {
     }
 
     private void addCase(){
-        ArrayList<int[]> vides = new ArrayList<>();
+        ArrayList<int[]> empties = new ArrayList<>();
         // On liste les coordonnées des cases vides
         for (int i = 0; i < tabCases.length; i++) {  // transposition de la matrice
             for (int j = 0; j < tabCases.length; j++) {
                 if(tabCases[i][j] == null){
-                    vides.add(new int[] { i, j });
+                    empties.add(new int[] { i, j });
                 }
             }
         }
 
-        if(vides.isEmpty()){ // Si plus aucune case n'est libre
+        if(empties.isEmpty()){ // Si plus aucune case n'est libre
             return;
         }
 
         Random rd = new Random();
-        int[] coordonnees = vides.get(rd.nextInt(vides.size()));
+        int[] coordonates = empties.get(rd.nextInt(empties.size()));
 
         int r = rd.nextInt(4);
         switch (r) {
             case 0:
-                tabCases[coordonnees[0]][coordonnees[1]] = new Case(4, this);
+                tabCases[coordonates[0]][coordonates[1]] = new Case(4, this);
                 break;
             case 1:
             case 2:
             case 3:
-                tabCases[coordonnees[0]][coordonnees[1]] = new Case(2, this);
+                tabCases[coordonates[0]][coordonates[1]] = new Case(2, this);
                 break;
         }
-        caseMap.put(tabCases[coordonnees[0]][coordonnees[1]],new Point(coordonnees[0], coordonnees[1]));
+        caseMap.put(tabCases[coordonates[0]][coordonates[1]],new Point(coordonates[0], coordonates[1]));
     }
 
     public void restart() {
         tabCases = new Case[tabCases.length][tabCases.length];
         caseMap.clear();
+        win = false;
+        lose = false;
         initCases();
+
     }
 }

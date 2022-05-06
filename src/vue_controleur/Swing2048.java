@@ -7,8 +7,6 @@ import statics.Colors;
 
 import javax.swing.*;
 import javax.swing.border.Border;
-import javax.swing.event.MenuKeyEvent;
-import javax.swing.event.MenuKeyListener;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.Observable;
@@ -57,12 +55,10 @@ public class Swing2048 extends JFrame implements Observer {
     private void addMenus() {
         JMenuBar mb = new JMenuBar();
         JMenu gameMenu = new JMenu("Game");
-        JMenuItem restartItem = new JMenuItem("Restart", KeyEvent.VK_R);
-        restartItem.addMouseListener(new MouseAdapter() {
+        JMenuItem restartItem = new JMenuItem("Restart");
+        restartItem.addActionListener(new ActionListener() {
             @Override
-            public void mouseClicked(MouseEvent e) {
-                super.mouseClicked(e);
-                System.out.print("restart");
+            public void actionPerformed(ActionEvent e) {
                 game.restart();
             }
         });
@@ -108,10 +104,10 @@ public class Swing2048 extends JFrame implements Observer {
             @Override
             public void keyPressed(KeyEvent e) {
                 switch(e.getKeyCode()) {  // on regarde quelle touche a été pressée
-                    case KeyEvent.VK_LEFT : game.action_joueur(Direction.LEFT); break;
-                    case KeyEvent.VK_RIGHT : game.action_joueur(Direction.RIGHT); break;
-                    case KeyEvent.VK_DOWN : game.action_joueur(Direction.DOWN); break;
-                    case KeyEvent.VK_UP : game.action_joueur(Direction.UP); break;
+                    case KeyEvent.VK_LEFT : game.actionPlayer(Direction.LEFT); break;
+                    case KeyEvent.VK_RIGHT : game.actionPlayer(Direction.RIGHT); break;
+                    case KeyEvent.VK_DOWN : game.actionPlayer(Direction.DOWN); break;
+                    case KeyEvent.VK_UP : game.actionPlayer(Direction.UP); break;
                 }
             }
         });
