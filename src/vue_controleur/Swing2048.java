@@ -7,9 +7,10 @@ import statics.Colors;
 
 import javax.swing.*;
 import javax.swing.border.Border;
+import javax.swing.event.MenuKeyEvent;
+import javax.swing.event.MenuKeyListener;
 import java.awt.*;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
+import java.awt.event.*;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -25,10 +26,11 @@ public class Swing2048 extends JFrame implements Observer {
     public Swing2048(Game _game) {
         game = _game;
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        ImageIcon img = new ImageIcon("../statics/icon.png");
+        ImageIcon img = new ImageIcon("../statics/icon.ico");
         setIconImage(img.getImage());
         setSize(game.getSize() * PIXEL_PER_SQUARE, game.getSize() * PIXEL_PER_SQUARE);
         tabC = new JLabel[game.getSize()][game.getSize()];
+        addMenus();
 
 
         JPanel contentPane = new JPanel(new GridLayout(game.getSize(), game.getSize()));
@@ -52,7 +54,25 @@ public class Swing2048 extends JFrame implements Observer {
 
     }
 
+    private void addMenus() {
+        JMenuBar mb = new JMenuBar();
+        JMenu gameMenu = new JMenu("Game");
+        JMenuItem restartItem = new JMenuItem("Restart", KeyEvent.VK_R);
+        restartItem.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+                System.out.print("restart");
+                game.restart();
+            }
+        });
+        gameMenu.add(restartItem);
+        mb.add(gameMenu);
+        JMenu MoreMenu = new JMenu("More");
+        mb.add(MoreMenu);
 
+        setJMenuBar(mb);
+    }
 
 
     /**

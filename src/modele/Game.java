@@ -191,14 +191,12 @@ public class Game extends Observable {
 
     public void initCases() {
         // permet de libérer le processus graphique ou de la console
-        new Thread(() -> {
-            int filled_cases = 0;
+        int filled_cases = 0;
 
-            while(filled_cases < 2){
-                addCase();
-                filled_cases++;
-            }
-        }).start();
+        while(filled_cases < 2){
+            addCase();
+            filled_cases++;
+        }
 
         setChanged();
         notifyObservers();
@@ -233,5 +231,10 @@ public class Game extends Observable {
                 tabCases[coordonnees[0]][coordonnees[1]] = new Case(2);
                 break;
         }
+    }
+
+    public void restart() {
+        tabCases = new Case[tabCases.length][tabCases.length];
+        initCases();
     }
 }
