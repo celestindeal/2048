@@ -1,11 +1,13 @@
 package modele;
-
+import javax.swing.JOptionPane;
 import java.util.Observable;
 import java.util.Random;
 
 public class Game extends Observable {
 
     private Case[][] tabCases;
+    private boolean lose = false;
+    private boolean win = false;
 
     public Game(int size) {
         tabCases = new Case[size][size];
@@ -18,6 +20,11 @@ public class Game extends Observable {
 
     public Case getCase(int i, int j) {
         return tabCases[i][j];
+    }
+
+    public static void infoBox(String infoMessage, String titleBar)
+    {
+        JOptionPane.showMessageDialog(null, infoMessage, "InfoBox: " + titleBar, JOptionPane.INFORMATION_MESSAGE);
     }
 
     private void shiftLeft(){
@@ -70,6 +77,28 @@ public class Game extends Observable {
 
     }
 
+    private void  winLose(){
+
+
+        boolean losetemo = true;
+
+
+        for (int i = 0; i < tabCases.length; i++) {    // remette les états de fusions des cases de la table de jeu
+            for (int j = 0; j < tabCases.length; j++) {
+                if(tabCases[i][j] == null){
+                    losetemo = false;
+                }
+                else if (tabCases[i][j].getValue() == 2048 && win == false ){
+                    win = true;
+                    infoBox("tu as gagné grosse merde", "Ferme bien ta geule");
+                }
+            }
+        }
+        if(losetemo ){
+            lose = true; // tu n'as pas encore perdu
+        }
+    }
+
     public void action_joueur(Direction direction){
         switch (direction) {
             case UP:
@@ -96,6 +125,7 @@ public class Game extends Observable {
         addCase();
         setChanged();
         notifyObservers();
+        winLose();
     }
 
     public void initCases() {
