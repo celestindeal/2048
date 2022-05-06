@@ -20,7 +20,7 @@ public class Main {
     }
 
     public static void mainSwing() {
-        Game game = new Game(5);
+        Game game = new Game(3);
         Swing2048 vue = new Swing2048(game);
         game.addObserver(vue);
 

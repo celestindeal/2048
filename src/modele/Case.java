@@ -28,15 +28,31 @@ public class Case {
         return this.merge;
     }
 
-    public void changeMergeState(boolean _merge){
-        this.merge = _merge;
+    public void reinitMergeState(){
+        this.merge = false;
 
     }
 
     public void shift() {
         Case neighbour = _game.getNeighbour(this);
         if(neighbour == null){
-            _game.moveCase(this);
+            while(neighbour == null){
+                _game.moveCase(this);
+                if (!_game.isLeft(this)){
+                    neighbour = _game.getNeighbour(this);
+                }else{
+                    break;
+                }
+            }
+
         }
+        if(neighbour != null && neighbour.getValue() == this.getValue() && !neighbour.hasMerge()){
+            _game.mergeCases(neighbour, this);
+        }
+    }
+
+    public void merge(Case c){
+        this.value += c.value;
+        this.merge = true;
     }
 }

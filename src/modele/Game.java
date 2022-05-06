@@ -14,6 +14,7 @@ public class Game extends Observable {
 
     public Game(int size) {
         tabCases = new Case[size][size];
+        caseMap = new HashMap<>();
         initCases();
     }
 
@@ -32,28 +33,43 @@ public class Game extends Observable {
 
     private void shift(){
         for (int i = 0; i < tabCases.length; i++) {
-            for (int j = 1; j < tabCases.length; j++) {
-                tabCases[i][j].shift();
-            }
-        }
-
-        for (int i = 0; i < tabCases.length; i++) {    // remettre les états de fusion des cases de la table de jeu
             for (int j = 0; j < tabCases.length; j++) {
-                if(tabCases[i][j] != null){
-                    tabCases[i][j].changeMergeState(false);
+                if(tabCases[i][j] != null) {
+                    if (j != 0){
+                        tabCases[i][j].shift();
+                    }
                 }
             }
+        }
+        for(Case c : caseMap.keySet()){
+            c.reinitMergeState();
         }
     }
 
     public Case getNeighbour(Case _case){
         Point p = caseMap.get(_case);
-        p.x -= 1;
-        return tabCases[p.x][p.y];
+        System.out.println("{" + p.x +", " + p.y + "}");
+        return tabCases[p.x][p.y-1];
+    }
+
+    public boolean isLeft(Case c){
+        return caseMap.get(c).y == 0;
     }
 
     public void moveCase(Case _case){
+        Point p = caseMap.get(_case);
+        tabCases[p.x][p.y-1] = _case;
+        tabCases[p.x][p.y] = null;
+        caseMap.replace(_case,p, new Point(p.x, p.y-1));
+        this.hasMove = true;
+    }
 
+    public void mergeCases(Case case1, Case case2){
+        case1.merge(case2);
+        Point p = caseMap.get(case2);
+        tabCases[p.x][p.y] = null;
+        caseMap.remove(case2);
+        this.hasMove = true;
     }
 
     public void turnLeft(int nbTurn){
@@ -73,6 +89,14 @@ public class Game extends Observable {
             for (int i = 0; i < tabCases.length/2; i++) {  // inversion des colone
                 tabCases[i]=tabCasesTurn[tabCases.length-1-i];
                 tabCases[tabCases.length-1-i]=tabCasesTurn[i];
+            }
+
+            for (int i = 0; i < tabCases.length; i++) {  // mise a jour du hashhh map
+                for (int j = 0; j < tabCases.length; j++) {
+                    if(tabCases[i][j] != null){
+                        caseMap.replace(tabCases[i][j],new Point(i,j));
+                    }
+                }
             }
         }
     }
@@ -162,9 +186,7 @@ public class Game extends Observable {
                 break;
             case RIGHT:
                 turnLeft(2);
-
                 shift();
-
                 turnLeft(2);
                 break;
             case LEFT:
@@ -226,10 +248,12 @@ public class Game extends Observable {
                 tabCases[coordonnees[0]][coordonnees[1]] = new Case(2, this);
                 break;
         }
+        caseMap.put(tabCases[coordonnees[0]][coordonnees[1]],new Point(coordonnees[0], coordonnees[1]));
     }
 
     public void restart() {
         tabCases = new Case[tabCases.length][tabCases.length];
+        caseMap.clear();
         initCases();
     }
 }
