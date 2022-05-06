@@ -153,7 +153,8 @@ public class Game extends Observable {
     }
 
     public void action_joueur(Direction direction){
-        switch (direction) {
+        if(!lose){
+               switch (direction) {
             case UP:
                 turnLeft(1);
                 shiftLeft();
@@ -182,6 +183,10 @@ public class Game extends Observable {
         setChanged();
         notifyObservers();
         winLose();
+        }else{
+            infoBox("infoMessage", "titleBar");
+        }
+     
     }
 
     public void initCases() {
