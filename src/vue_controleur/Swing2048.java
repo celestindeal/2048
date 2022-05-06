@@ -2,38 +2,47 @@ package vue_controleur;
 
 import modele.Case;
 import modele.Game;
+import modele.Direction;
+import statics.Colors;
 
 import javax.swing.*;
 import javax.swing.border.Border;
+import javax.swing.event.MenuKeyEvent;
+import javax.swing.event.MenuKeyListener;
 import java.awt.*;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
+import java.awt.event.*;
 import java.util.Observable;
 import java.util.Observer;
 
 public class Swing2048 extends JFrame implements Observer {
-    private static final int PIXEL_PER_SQUARE = 60;
+    private static final int PIXEL_PER_SQUARE = 160;
     // tableau de cases : i, j -> case graphique
-    private JLabel[][] tabC;
-    private Game game;
+    private final JLabel[][] tabC;
+    private final Game game;
+
+
 
 
     public Swing2048(Game _game) {
         game = _game;
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        ImageIcon img = new ImageIcon("../statics/icon.ico");
+        setIconImage(img.getImage());
         setSize(game.getSize() * PIXEL_PER_SQUARE, game.getSize() * PIXEL_PER_SQUARE);
         tabC = new JLabel[game.getSize()][game.getSize()];
+        addMenus();
 
 
         JPanel contentPane = new JPanel(new GridLayout(game.getSize(), game.getSize()));
 
         for (int i = 0; i < game.getSize(); i++) {
             for (int j = 0; j < game.getSize(); j++) {
-                Border border = BorderFactory.createLineBorder(Color.darkGray, 5);
+                Border border = BorderFactory.createLineBorder(Color.decode("#B7AA9C"), 10);
                 tabC[i][j] = new JLabel();
+                tabC[i][j].setFont(new Font("SansSerif", Font.BOLD, 48));
                 tabC[i][j].setBorder(border);
                 tabC[i][j].setHorizontalAlignment(SwingConstants.CENTER);
-
+                tabC[i][j].setOpaque(true);
 
                 contentPane.add(tabC[i][j]);
 
@@ -45,7 +54,25 @@ public class Swing2048 extends JFrame implements Observer {
 
     }
 
+    private void addMenus() {
+        JMenuBar mb = new JMenuBar();
+        JMenu gameMenu = new JMenu("Game");
+        JMenuItem restartItem = new JMenuItem("Restart", KeyEvent.VK_R);
+        restartItem.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+                System.out.print("restart");
+                game.restart();
+            }
+        });
+        gameMenu.add(restartItem);
+        mb.add(gameMenu);
+        JMenu MoreMenu = new JMenu("More");
+        mb.add(MoreMenu);
 
+        setJMenuBar(mb);
+    }
 
 
     /**
@@ -58,21 +85,19 @@ public class Swing2048 extends JFrame implements Observer {
             for (int i = 0; i < game.getSize(); i++) {
                 for (int j = 0; j < game.getSize(); j++) {
                     Case c = game.getCase(i, j);
-
+                    String[] col;
                     if (c == null) {
-
                         tabC[i][j].setText("");
-
+                        col = Colors.get(0);
                     } else {
-                        tabC[i][j].setText(c.getValeur() + "");
+                        tabC[i][j].setText(c.getValue() + "");
+                        col = Colors.get(c.getValue());
                     }
-
-
+                    tabC[i][j].setBackground(Color.decode(col[0]));
+                    tabC[i][j].setForeground(Color.decode(col[1]));
                 }
             }
         });
-
-
     }
 
     /**
@@ -83,10 +108,10 @@ public class Swing2048 extends JFrame implements Observer {
             @Override
             public void keyPressed(KeyEvent e) {
                 switch(e.getKeyCode()) {  // on regarde quelle touche a été pressée
-                    case KeyEvent.VK_LEFT : game.initCases(); break;
-                    case KeyEvent.VK_RIGHT : game.initCases(); break;
-                    case KeyEvent.VK_DOWN : game.initCases(); break;
-                    case KeyEvent.VK_UP : game.initCases(); break;
+                    case KeyEvent.VK_LEFT : game.action_joueur(Direction.LEFT); break;
+                    case KeyEvent.VK_RIGHT : game.action_joueur(Direction.RIGHT); break;
+                    case KeyEvent.VK_DOWN : game.action_joueur(Direction.DOWN); break;
+                    case KeyEvent.VK_UP : game.action_joueur(Direction.UP); break;
                 }
             }
         });
