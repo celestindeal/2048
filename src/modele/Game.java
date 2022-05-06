@@ -1,6 +1,7 @@
 package modele;
 import javax.swing.JOptionPane;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Observable;
 import java.util.Random;
 
@@ -79,28 +80,75 @@ public class Game extends Observable {
                 tabCases[tabCases.length-1-i]=tabCasesTurn[i];
             }
         }
+    }
 
+    private boolean controlerVoisinLose(int i, int j,  boolean[] controles ){   //controles = haut droite bas gauche 
+        if (controles[0]){
+            if( tabCases[i][j].getValue() == tabCases[i][j-1].getValue()){
+                return true;          // ce n'est pas encore perdu
+            }
+        }
+        if (controles[1]){
+            if( tabCases[i][j].getValue() == tabCases[i+1][j].getValue()){
+                return true;          // ce n'est pas encore perdu
+            }
+        }
+        if (controles[2]){
+            if( tabCases[i][j].getValue() == tabCases[i][j+1].getValue()){
+                return true;          // ce n'est pas encore perdu
+            }
+        }
+        if (controles[3]){
+            if( tabCases[i][j].getValue() == tabCases[i-1][j].getValue()){
+                return true;          // ce n'est pas encore perdu
+            }
+        }
+        return false;
     }
 
     private void  winLose(){
 
-
-        boolean losetemo = true;
-
+        boolean losetemo = true;  // true  perdu false pas perdu 
 
         for (int i = 0; i < tabCases.length; i++) {    // remette les états de fusions des cases de la table de jeu
             for (int j = 0; j < tabCases.length; j++) {
                 if(tabCases[i][j] == null){
                     losetemo = false;
                 }
-                else if (tabCases[i][j].getValue() == 2048 && win == false ){
+                else if (tabCases[i][j].getValue() == 2048 && !win ){
                     win = true;
                     infoBox("tu as gagné grosse merde", "Ferme bien ta geule");
+                }  
+            }
+        }
+
+        if( losetemo ){ // toutes les casses sont pleinne il faut controler si il y encore une possibiliter
+            for (int i = 0; i < tabCases.length; i++) {    
+                for (int j = 0; j < tabCases.length; j++) {
+                    boolean[] controles = new boolean[4];//controles = haut droite bas gauche 
+                    Arrays.fill(controles, Boolean.TRUE);
+                    if(i==0){//gauche
+                        controles[3] = false;
+                    }
+                    if(j==0){//haut
+                        controles[0] = false;
+                    }
+                    if(i==tabCases.length-1){  //droit
+                        controles[1] = false;
+                    }
+                    if(j==tabCases.length-1){  //bas
+                        controles[2] = false;
+                    }
+                    if(controlerVoisinLose(i,j,controles)){  // si on as une solution on as pas perdu
+                        losetemo=false; // tu na pas perdu 
+                    }
                 }
             }
         }
-        if(losetemo ){
-            lose = true; // tu n'as pas encore perdu
+
+        if(losetemo){
+            lose = true;
+            infoBox("tu as PERDU grosse merde", "Ferme bien ta geule"); 
         }
     }
 
@@ -152,7 +200,7 @@ public class Game extends Observable {
     }
 
     private void addCase(){
-        ArrayList<int[]> vides = new ArrayList();
+        ArrayList<int[]> vides = new ArrayList<>();
         // On liste les coordonnées des cases vides
         for (int i = 0; i < tabCases.length; i++) {  // transposition de la matrice
             for (int j = 0; j < tabCases.length; j++) {
