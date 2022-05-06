@@ -10,6 +10,8 @@ public class Game extends Observable {
     private boolean lose = false;
     private boolean win = false;
 
+    private boolean hasMove = false;
+
     public Game(int size) {
         tabCases = new Case[size][size];
         initCases();
@@ -36,10 +38,12 @@ public class Game extends Observable {
                     if(tabCases[i][j-1] == null){
                         tabCases[i][j-1] = tabCases[i][j];
                         tabCases[i][j]=null;
+                        hasMove = true;
                         j--;
                     }else if (tabCases[i][j].getValue() == tabCases[i][j-1].getValue() && !tabCases[i][j-1].hasMerge()){
                         tabCases[i][j-1].doubleValue();
                         tabCases[i][j]=null;
+                        hasMove = true;
                     }else{
                         break;
                     }
@@ -47,7 +51,7 @@ public class Game extends Observable {
             }
         }
 
-        for (int i = 0; i < tabCases.length; i++) {    // remette les états de fusions des cases de la table de jeu
+        for (int i = 0; i < tabCases.length; i++) {    // remettre les états de fusion des cases de la table de jeu
             for (int j = 0; j < tabCases.length; j++) {
                 if(tabCases[i][j] != null){
                     tabCases[i][j].changeMergeState(false);
@@ -123,7 +127,10 @@ public class Game extends Observable {
                 shiftLeft();
                 break;
         }
-        addCase();
+        if(hasMove) {
+            addCase();
+            hasMove = false;
+        }
         setChanged();
         notifyObservers();
         winLose();
