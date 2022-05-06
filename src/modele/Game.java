@@ -1,5 +1,6 @@
 package modele;
 import javax.swing.JOptionPane;
+import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Random;
 
@@ -144,24 +145,32 @@ public class Game extends Observable {
     }
 
     private void addCase(){
-        Random rd = new Random();
-        int i = rd.nextInt(tabCases.length);
-        int j = rd.nextInt(tabCases.length);
-
-        while(tabCases[i][j] != null) {
-            i = rd.nextInt(tabCases.length);
-            j = rd.nextInt(tabCases.length);
+        ArrayList<int[]> vides = new ArrayList();
+        // On liste les coordonnées des cases vides
+        for (int i = 0; i < tabCases.length; i++) {  // transposition de la matrice
+            for (int j = 0; j < tabCases.length; j++) {
+                if(tabCases[i][j] == null){
+                    vides.add(new int[] { i, j });
+                }
+            }
         }
+
+        if(vides.isEmpty()){ // Si plus aucune case n'est libre
+            return;
+        }
+
+        Random rd = new Random();
+        int[] coordonnees = vides.get(rd.nextInt(vides.size()));
 
         int r = rd.nextInt(4);
         switch (r) {
             case 0:
-                tabCases[i][j] = new Case(4);
+                tabCases[coordonnees[0]][coordonnees[1]] = new Case(4);
                 break;
             case 1:
             case 2:
             case 3:
-                tabCases[i][j] = new Case(2);
+                tabCases[coordonnees[0]][coordonnees[1]] = new Case(2);
                 break;
         }
     }
