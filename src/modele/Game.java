@@ -1,15 +1,14 @@
 package modele;
 import javax.swing.JOptionPane;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Observable;
-import java.util.Random;
+import java.util.*;
 
 public class Game extends Observable {
 
     private Case[][] tabCases;
     private boolean lose = false;
     private boolean win = false;
+
+    private HashMap<Case, Point> caseMap;
 
     private boolean hasMove = false;
 
@@ -31,24 +30,10 @@ public class Game extends Observable {
         JOptionPane.showMessageDialog(null, infoMessage, "InfoBox: " + titleBar, JOptionPane.INFORMATION_MESSAGE);
     }
 
-    private void shiftLeft(){
+    private void shift(){
         for (int i = 0; i < tabCases.length; i++) {
             for (int j = 1; j < tabCases.length; j++) {
-
-                while( j>0 && tabCases[i][j] != null  ){
-                    if(tabCases[i][j-1] == null){
-                        tabCases[i][j-1] = tabCases[i][j];
-                        tabCases[i][j]=null;
-                        hasMove = true;
-                        j--;
-                    }else if (tabCases[i][j].getValue() == tabCases[i][j-1].getValue() && !tabCases[i][j-1].hasMerge()){
-                        tabCases[i][j-1].doubleValue();
-                        tabCases[i][j]=null;
-                        hasMove = true;
-                    }else{
-                        break;
-                    }
-                }
+                tabCases[i][j].shift();
             }
         }
 
@@ -59,6 +44,16 @@ public class Game extends Observable {
                 }
             }
         }
+    }
+
+    public Case getNeighbour(Case _case){
+        Point p = caseMap.get(_case);
+        p.x -= 1;
+        return tabCases[p.x][p.y];
+    }
+
+    public void moveCase(Case _case){
+
     }
 
     public void turnLeft(int nbTurn){
@@ -157,23 +152,23 @@ public class Game extends Observable {
                switch (direction) {
             case UP:
                 turnLeft(1);
-                shiftLeft();
+                shift();
                 turnLeft(3);
                 break;
             case DOWN:
                 turnLeft(3);
-                shiftLeft();
+                shift();
                 turnLeft(1);
                 break;
             case RIGHT:
                 turnLeft(2);
 
-                shiftLeft();
+                shift();
 
                 turnLeft(2);
                 break;
             case LEFT:
-                shiftLeft();
+                shift();
                 break;
         }
         if(hasMove) {
@@ -223,12 +218,12 @@ public class Game extends Observable {
         int r = rd.nextInt(4);
         switch (r) {
             case 0:
-                tabCases[coordonnees[0]][coordonnees[1]] = new Case(4);
+                tabCases[coordonnees[0]][coordonnees[1]] = new Case(4, this);
                 break;
             case 1:
             case 2:
             case 3:
-                tabCases[coordonnees[0]][coordonnees[1]] = new Case(2);
+                tabCases[coordonnees[0]][coordonnees[1]] = new Case(2, this);
                 break;
         }
     }

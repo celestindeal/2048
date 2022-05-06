@@ -4,8 +4,11 @@ public class Case {
     private int value;
     private boolean merge=false;
 
-    public Case(int _value) {
+    private final Game _game;
+
+    public Case(int _value, Game game) {
         this.value = _value;
+        this._game = game;
     }
 
     public int getValue() {
@@ -28,5 +31,12 @@ public class Case {
     public void changeMergeState(boolean _merge){
         this.merge = _merge;
 
+    }
+
+    public void shift() {
+        Case neighbour = _game.getNeighbour(this);
+        if(neighbour == null){
+            _game.moveCase(this);
+        }
     }
 }
