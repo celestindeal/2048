@@ -15,7 +15,9 @@ import java.util.Observer;
 public class Swing2048 extends JFrame implements Observer {
     private static final int PIXEL_PER_SQUARE = 160;
     // tableau de cases : i, j -> case graphique
+
     private final JLabel[][] tabC;
+    private final JLabel score;
     private final Game game;
 
 
@@ -30,9 +32,10 @@ public class Swing2048 extends JFrame implements Observer {
         tabC = new JLabel[game.getSize()][game.getSize()];
         addMenus();
 
-
-        JPanel contentPane = new JPanel(new GridLayout(game.getSize(), game.getSize()));
-        
+        JPanel contentGrid = new JPanel(new GridLayout(game.getSize(), game.getSize()));
+        JPanel contentScore = new JPanel();
+        score = new JLabel( "Score : "+ String.valueOf(game.score) );
+        contentScore.add(score);
         for (int i = 0; i < game.getSize(); i++) {
             for (int j = 0; j < game.getSize(); j++) {
                 Border border = BorderFactory.createLineBorder(Color.decode("#B7AA9C"), 10);
@@ -42,10 +45,13 @@ public class Swing2048 extends JFrame implements Observer {
                 tabC[i][j].setHorizontalAlignment(SwingConstants.CENTER);
                 tabC[i][j].setOpaque(true);
 
-                contentPane.add(tabC[i][j]);
+                contentGrid.add(tabC[i][j]);
 
             }
         }
+        JPanel contentPane = new JPanel(new BorderLayout());
+        contentPane.add(contentGrid,BorderLayout.CENTER);
+        contentPane.add(contentScore,BorderLayout.NORTH);
         setContentPane(contentPane);
         addKeyboardListener();
         refresh();
@@ -94,6 +100,7 @@ public class Swing2048 extends JFrame implements Observer {
                 }
             }
         });
+        this.score.setText("Score : " + String.valueOf(game.score) );
     }
 
     /**
