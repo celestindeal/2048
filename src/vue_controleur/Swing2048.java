@@ -32,7 +32,7 @@ public class Swing2048 extends JFrame implements Observer {
 
 
         JPanel contentPane = new JPanel(new GridLayout(game.getSize(), game.getSize()));
-
+        
         for (int i = 0; i < game.getSize(); i++) {
             for (int j = 0; j < game.getSize(); j++) {
                 Border border = BorderFactory.createLineBorder(Color.decode("#B7AA9C"), 10);

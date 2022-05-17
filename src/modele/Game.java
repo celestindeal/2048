@@ -7,6 +7,7 @@ public class Game extends Observable {
     private Case[][] tabCases;
     private boolean lose = false;
     private boolean win = false;
+    public int score = 0;
 
     private HashMap<Case, Point> caseMap;
 
@@ -48,7 +49,6 @@ public class Game extends Observable {
 
     public Case getNeighbour(Case _case){
         Point p = caseMap.get(_case);
-        System.out.println("{" + p.x +", " + p.y + "}");
         return tabCases[p.x][p.y-1];
     }
 
@@ -70,6 +70,8 @@ public class Game extends Observable {
         tabCases[p.x][p.y] = null;
         caseMap.remove(case2);
         this.hasMove = true;
+        // compte les points de la partie 
+        this.score += case1.getValue(); 
     }
 
     public void turnLeft(int nbTurn){
@@ -257,6 +259,7 @@ public class Game extends Observable {
         win = false;
         lose = false;
         initCases();
+        this.score = 0;
 
     }
 }
