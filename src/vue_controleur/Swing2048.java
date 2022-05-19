@@ -9,15 +9,17 @@ import javax.swing.*;
 import javax.swing.border.Border;
 import java.awt.*;
 import java.awt.event.*;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileWriter;
-import java.io.PrintWriter;
 import java.net.URI;
 import java.util.Observable;
 import java.util.Observer;
-import java.util.Scanner;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 
 public class Swing2048 extends JFrame implements Observer {
     private static final int PIXEL_PER_SQUARE = 160;
@@ -27,7 +29,7 @@ public class Swing2048 extends JFrame implements Observer {
     private final JLabel score;
     
     private final JLabel bestScore;
-    private final Game game;
+    private Game game;
     private int best_score = 0;
 
    
@@ -79,18 +81,79 @@ public class Swing2048 extends JFrame implements Observer {
         refresh();
 
     }
+    
+    private void refreshVue(){
+        game.addObserver(this);
+        refresh();
+    }
 
     private void addMenus() {
         JMenuBar mb = new JMenuBar();
         JMenu gameMenu = new JMenu("Game");
         JMenuItem restartItem = new JMenuItem("Restart");
+        
+
         restartItem.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 game.restart();
             }
         });
+        
+        JMenuItem saveItem = new JMenuItem("Save");
+        saveItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                File fichier =  new File("test.ser") ;
+                // ouverture d'un flux sur un fichier
+                ObjectOutputStream oos;
+                try {
+                    oos = new ObjectOutputStream(new FileOutputStream(fichier));
+                // sérialization de l'objet
+                    oos.writeObject(game) ;
+                } catch (FileNotFoundException e1) {
+                    // TODO Auto-generated catch block
+                    e1.printStackTrace();
+                } catch (IOException e1) {
+                    // TODO Auto-generated catch block
+                    e1.printStackTrace();
+                }
+               
+            }
+        });
+
+        JMenuItem chargerItem = new JMenuItem("Charger");
+        chargerItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                File fichier =  new File("test.ser") ;
+                ObjectOutputStream oos;
+                try {
+                    // ouverture d'un flux sur un fichier
+                    ObjectInputStream ois =  new ObjectInputStream(new FileInputStream(fichier)) ;
+                    // désérialization de l'objet
+
+                    game = (Game)ois.readObject() ;
+                    
+                } catch (FileNotFoundException e1) {
+                    // TODO Auto-generated catch block
+                    e1.printStackTrace();
+                } catch (IOException e1) {
+                    // TODO Auto-generated catch block
+                    e1.printStackTrace();
+                }catch (ClassNotFoundException e1) {
+                    // TODO Auto-generated catch block
+                    e1.printStackTrace();
+                }
+                refreshVue();
+            }
+        });
+
         gameMenu.add(restartItem);
+        gameMenu.add(saveItem);
+        gameMenu.add(chargerItem);
+
+        
         mb.add(gameMenu);
         JMenu MoreMenu = new JMenu("More");
         JMenuItem createrItem = new JMenuItem("Voir les créateurs"); 

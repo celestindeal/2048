@@ -1,6 +1,8 @@
 package modele;
 
-public class Case {
+import java.io.Serializable;
+
+public class Case  implements Serializable {
     private int value;
     private boolean merge=false;
 

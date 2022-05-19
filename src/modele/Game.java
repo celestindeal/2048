@@ -1,8 +1,10 @@
 package modele;
 import javax.swing.JOptionPane;
+
+import java.io.Serializable;
 import java.util.*;
 
-public class Game extends Observable {
+public class Game extends Observable implements Serializable {
 
     private Case[][] tabCases;
     private boolean lose = false;
@@ -175,6 +177,7 @@ public class Game extends Observable {
     }
 
     public void actionPlayer(Direction direction){
+        System.out.println("action joueur");
         if(!lose){
                switch (direction) {
             case UP:
