@@ -139,7 +139,7 @@ public class Game extends Observable {
                 }
                 else if (tabCases[i][j].getValue() == 2048 && !win ){
                     win = true;
-                    infoBox("tu as gagné grosse merde", "Ferme bien ta geule");
+                    infoBox("Félicitations vous avez atteint 2048 !", "Fin de partie !!!");
                 }  
             }
         }
@@ -170,7 +170,7 @@ public class Game extends Observable {
 
         if(losetemo){
             lose = true;
-            infoBox("tu as PERDU grosse merde", "Ferme bien ta geule"); 
+            infoBox("Ohhhhhhhhhh  vous avez perdu.", "Fin de partie !!!"); 
         }
     }
 
