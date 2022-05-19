@@ -14,6 +14,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.PrintWriter;
+import java.net.URI;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.Scanner;
@@ -92,6 +93,23 @@ public class Swing2048 extends JFrame implements Observer {
         gameMenu.add(restartItem);
         mb.add(gameMenu);
         JMenu MoreMenu = new JMenu("More");
+        JMenuItem createrItem = new JMenuItem("Voir les créateurs"); 
+        createrItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    URI uri2= new URI("https://www.linkedin.com/in/c%C3%A9lestin-deal-772ba9194/");
+                    java.awt.Desktop.getDesktop().browse(uri2);
+                    
+                    URI uri1= new URI("https://www.linkedin.com/in/robin-lusson-ba753019a/");
+                    java.awt.Desktop.getDesktop().browse(uri1);
+
+                } catch (Exception problem) {
+                    problem.printStackTrace();
+                }
+            }
+        });
+        MoreMenu.add(createrItem);
         mb.add(MoreMenu);
 
         setJMenuBar(mb);
