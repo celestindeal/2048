@@ -259,8 +259,9 @@ public class Game extends Observable {
         caseMap.clear();
         win = false;
         lose = false;
-        initCases();
         this.score = 0;
+        initCases();
+        
 
     }
 }
