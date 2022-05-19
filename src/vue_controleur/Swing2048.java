@@ -20,6 +20,10 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
+// affiche le nom de la partie sur laquel on joue
+// quand on sauvegarde une partie déjà sauvegarder on ne demande pas le nom et on garde la même 
+// on préviens quand on vas écrasser une sauvegarde 
+
 public class Swing2048 extends JFrame implements Observer {
     private static final int PIXEL_PER_SQUARE = 160;
     // tableau de cases : i, j -> case graphique
@@ -94,7 +98,7 @@ public class Swing2048 extends JFrame implements Observer {
         JMenuBar mb = new JMenuBar();
         JMenu gameMenu = new JMenu("Game");
         JMenuItem restartItem = new JMenuItem("Restart");
-        JMenu chargerItem = new JMenu("Partie sauvegarder");
+        JMenu chargerItem = new JMenu("Charger partie");
         
 
         restartItem.addActionListener(new ActionListener() {
@@ -104,7 +108,7 @@ public class Swing2048 extends JFrame implements Observer {
             }
         });
         
-        JMenuItem saveItem = new JMenuItem("Save");
+        JMenuItem saveItem = new JMenuItem("Sauver la partie");
         saveItem.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
