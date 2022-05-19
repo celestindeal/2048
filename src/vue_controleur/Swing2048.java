@@ -9,8 +9,14 @@ import javax.swing.*;
 import javax.swing.border.Border;
 import java.awt.*;
 import java.awt.event.*;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.PrintWriter;
 import java.util.Observable;
 import java.util.Observer;
+import java.util.Scanner;
 
 public class Swing2048 extends JFrame implements Observer {
     private static final int PIXEL_PER_SQUARE = 160;
@@ -18,10 +24,12 @@ public class Swing2048 extends JFrame implements Observer {
 
     private final JLabel[][] tabC;
     private final JLabel score;
+    
+    private final JLabel bestScore;
     private final Game game;
+    private int best_score = 0;
 
-
-
+   
 
     public Swing2048(Game _game) {
         game = _game;
@@ -31,11 +39,11 @@ public class Swing2048 extends JFrame implements Observer {
         setSize(game.getSize() * PIXEL_PER_SQUARE, game.getSize() * PIXEL_PER_SQUARE);
         tabC = new JLabel[game.getSize()][game.getSize()];
         addMenus();
+        best_score = BestScore.get_bestScore();
 
         JPanel contentGrid = new JPanel(new GridLayout(game.getSize(), game.getSize()));
-        JPanel contentScore = new JPanel();
-        score = new JLabel( "Score : "+ String.valueOf(game.score) );
-        contentScore.add(score);
+        
+
         for (int i = 0; i < game.getSize(); i++) {
             for (int j = 0; j < game.getSize(); j++) {
                 Border border = BorderFactory.createLineBorder(Color.decode("#B7AA9C"), 10);
@@ -46,9 +54,22 @@ public class Swing2048 extends JFrame implements Observer {
                 tabC[i][j].setOpaque(true);
 
                 contentGrid.add(tabC[i][j]);
-
             }
         }
+        
+        JPanel contentScore = new JPanel(new BorderLayout());
+        // Currente Score
+        JPanel contentCurrentScore = new JPanel();
+        score = new JLabel( "Score : "+ String.valueOf(game.score) );
+        contentCurrentScore.add(score);
+        // best score 
+        JPanel contentBestScore = new JPanel();
+        bestScore = new JLabel( "Best Score : "+ String.valueOf(best_score));
+        contentBestScore.add( bestScore);
+        contentScore.add(contentCurrentScore,BorderLayout.EAST);
+        contentScore.add(contentBestScore,BorderLayout.WEST);
+
+       
         JPanel contentPane = new JPanel(new BorderLayout());
         contentPane.add(contentGrid,BorderLayout.CENTER);
         contentPane.add(contentScore,BorderLayout.NORTH);
@@ -76,6 +97,15 @@ public class Swing2048 extends JFrame implements Observer {
         setJMenuBar(mb);
     }
 
+    private void manageScore(){  // à chaque tour on mets les scores à jour dans l'affichage et dans le fichier de sauvegarde du best score 
+        this.score.setText("Score : " + String.valueOf(game.score) );
+
+        if (game.score > best_score ){
+            BestScore.set_bestScore(game.score);
+            this.bestScore.setText("Best Score : "+ String.valueOf(game.score));
+            
+        }
+    }
 
     /**
      * Correspond à la fonctionnalité de Vue : affiche les données du modèle
@@ -100,7 +130,8 @@ public class Swing2048 extends JFrame implements Observer {
                 }
             }
         });
-        this.score.setText("Score : " + String.valueOf(game.score) );
+        manageScore();
+        
     }
 
     /**

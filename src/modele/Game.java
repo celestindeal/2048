@@ -126,6 +126,7 @@ public class Game extends Observable {
         }
         return false;
     }
+    
 
     private void  winLose(){
 
