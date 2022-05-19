@@ -19,7 +19,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.Serializable;
 
 public class Swing2048 extends JFrame implements Observer {
     private static final int PIXEL_PER_SQUARE = 160;
@@ -82,15 +81,20 @@ public class Swing2048 extends JFrame implements Observer {
 
     }
     
-    private void refreshVue(){
+    private void refreshVue(){   // utiliser quand on change de partie 
         game.addObserver(this);
         refresh();
+    }
+
+    private String askPlayer(String message, String value ){
+        return JOptionPane.showInputDialog(message, value);
     }
 
     private void addMenus() {
         JMenuBar mb = new JMenuBar();
         JMenu gameMenu = new JMenu("Game");
         JMenuItem restartItem = new JMenuItem("Restart");
+        JMenu chargerItem = new JMenu("Partie sauvegarder");
         
 
         restartItem.addActionListener(new ActionListener() {
@@ -104,57 +108,59 @@ public class Swing2048 extends JFrame implements Observer {
         saveItem.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                File fichier =  new File("test.ser") ;
+
+                String nomSave = askPlayer("Le nom de ta sauvegarde ?","");
+
+                File fichier =  new File("partie/"+nomSave+".ser") ;
                 // ouverture d'un flux sur un fichier
                 ObjectOutputStream oos;
                 try {
                     oos = new ObjectOutputStream(new FileOutputStream(fichier));
-                // sérialization de l'objet
+                    // sérialization de l'objet
                     oos.writeObject(game) ;
                 } catch (FileNotFoundException e1) {
-                    // TODO Auto-generated catch block
                     e1.printStackTrace();
                 } catch (IOException e1) {
-                    // TODO Auto-generated catch block
                     e1.printStackTrace();
                 }
                
             }
         });
 
-        JMenuItem chargerItem = new JMenuItem("Charger");
-        chargerItem.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                File fichier =  new File("test.ser") ;
-                ObjectOutputStream oos;
-                try {
-                    // ouverture d'un flux sur un fichier
-                    ObjectInputStream ois =  new ObjectInputStream(new FileInputStream(fichier)) ;
-                    // désérialization de l'objet
+        File dir  = new File("partie/");
+        File[] liste = dir.listFiles();
+        for(File item : liste ){ // faire les propositions de partie enregister
+            JMenuItem Item = new JMenuItem(  item.getName().substring(0, item.getName().lastIndexOf('.')  ));  
+            Item.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    File fichier =  new File("partie/"+item.getName()) ;
+                    ObjectOutputStream oos;
+                    try {
+                        // ouverture d'un flux sur un fichier
+                        ObjectInputStream ois =  new ObjectInputStream(new FileInputStream(fichier)) ;
 
-                    game = (Game)ois.readObject() ;
-                    
-                } catch (FileNotFoundException e1) {
-                    // TODO Auto-generated catch block
-                    e1.printStackTrace();
-                } catch (IOException e1) {
-                    // TODO Auto-generated catch block
-                    e1.printStackTrace();
-                }catch (ClassNotFoundException e1) {
-                    // TODO Auto-generated catch block
-                    e1.printStackTrace();
+                        // désérialization de l'objet
+                        game = (Game)ois.readObject() ;
+                    } catch (FileNotFoundException e1) {
+                        e1.printStackTrace();
+                    } catch (IOException e1) {
+                        e1.printStackTrace();
+                    }catch (ClassNotFoundException e1) {
+                        e1.printStackTrace();
+                    }
+                    refreshVue();
                 }
-                refreshVue();
-            }
-        });
+            });
+            chargerItem.add(Item);
+        }
 
         gameMenu.add(restartItem);
         gameMenu.add(saveItem);
         gameMenu.add(chargerItem);
 
         
-        mb.add(gameMenu);
+        
         JMenu MoreMenu = new JMenu("More");
         JMenuItem createrItem = new JMenuItem("Voir les créateurs"); 
         createrItem.addActionListener(new ActionListener() {
@@ -173,8 +179,9 @@ public class Swing2048 extends JFrame implements Observer {
             }
         });
         MoreMenu.add(createrItem);
-        mb.add(MoreMenu);
 
+        mb.add(gameMenu);
+        mb.add(MoreMenu);
         setJMenuBar(mb);
     }
 
