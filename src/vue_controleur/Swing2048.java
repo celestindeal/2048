@@ -20,7 +20,6 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
-// affiche le nom de la partie sur laquel on joue
 // quand on sauvegarde une partie déjà sauvegarder on ne demande pas le nom et on garde la même 
 // on préviens quand on vas écrasser une sauvegarde 
 
@@ -131,7 +130,33 @@ public class Swing2048 extends JFrame implements Observer {
                     oos = new ObjectOutputStream(new FileOutputStream(fichier));
                     // sérialization de l'objet
                     oos.writeObject(game) ;
-                    titre.setText("Partie non sauvegardée");
+                    oos.close();
+
+                    JMenuItem Item = new JMenuItem(  nomSave  );    // ici j'ajoute cette sauvegarde à la liste afficher (ce code est à améliorer par le future)
+                    Item.addActionListener(new ActionListener() {
+                        @Override
+                        public void actionPerformed(ActionEvent e) {
+                            File fichier =  new File("partie/"+nomSave+".ser") ;
+                            try {
+                                // ouverture d'un flux sur un fichier
+                                ObjectInputStream ois =  new ObjectInputStream(new FileInputStream(fichier)) ;
+
+                                // désérialization de l'objet
+                                game = (Game)ois.readObject() ;
+                                ois.close();
+                                titre.setText( nomSave);
+                            } catch (FileNotFoundException e1) {
+                                e1.printStackTrace();
+                            } catch (IOException e1) {
+                                e1.printStackTrace();
+                            }catch (ClassNotFoundException e1) {
+                                e1.printStackTrace();
+                            }
+                            refreshVue();
+                        }
+                    });
+                    chargerItem.add(Item);
+                    titre.setText(nomSave);
                 } catch (FileNotFoundException e1) {
                     e1.printStackTrace();
                 } catch (IOException e1) {
