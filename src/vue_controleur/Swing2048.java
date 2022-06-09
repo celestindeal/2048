@@ -30,6 +30,8 @@ public class Swing2048 extends JFrame implements Observer {
 
     private final JLabel[][] tabC;
     private final JLabel score;
+    private final JLabel titre;
+
     
     private final JLabel bestScore;
     private Game game;
@@ -72,8 +74,14 @@ public class Swing2048 extends JFrame implements Observer {
         JPanel contentBestScore = new JPanel();
         bestScore = new JLabel( "Best Score : "+ String.valueOf(best_score));
         contentBestScore.add( bestScore);
+
+        JPanel contentBesttitre = new JPanel();
+        titre = new JLabel( "Partie non sauvegardée");
+        contentBesttitre.add( titre);
         contentScore.add(contentCurrentScore,BorderLayout.EAST);
         contentScore.add(contentBestScore,BorderLayout.WEST);
+        contentScore.add(contentBesttitre,BorderLayout.CENTER);
+
 
        
         JPanel contentPane = new JPanel(new BorderLayout());
@@ -105,6 +113,7 @@ public class Swing2048 extends JFrame implements Observer {
             @Override
             public void actionPerformed(ActionEvent e) {
                 game.restart();
+                titre.setText("Partie non sauvegardée");
             }
         });
         
@@ -122,6 +131,7 @@ public class Swing2048 extends JFrame implements Observer {
                     oos = new ObjectOutputStream(new FileOutputStream(fichier));
                     // sérialization de l'objet
                     oos.writeObject(game) ;
+                    titre.setText("Partie non sauvegardée");
                 } catch (FileNotFoundException e1) {
                     e1.printStackTrace();
                 } catch (IOException e1) {
@@ -139,13 +149,14 @@ public class Swing2048 extends JFrame implements Observer {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     File fichier =  new File("partie/"+item.getName()) ;
-                    ObjectOutputStream oos;
                     try {
                         // ouverture d'un flux sur un fichier
                         ObjectInputStream ois =  new ObjectInputStream(new FileInputStream(fichier)) ;
 
                         // désérialization de l'objet
                         game = (Game)ois.readObject() ;
+                        ois.close();
+                        titre.setText( item.getName().substring(0, item.getName().lastIndexOf('.')));
                     } catch (FileNotFoundException e1) {
                         e1.printStackTrace();
                     } catch (IOException e1) {
