@@ -20,7 +20,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
-// quand on sauvegarde une partie déjà sauvegarder on ne demande pas le nom et on garde la même 
+
 // on préviens quand on vas écrasser une sauvegarde 
 
 public class Swing2048 extends JFrame implements Observer {
@@ -31,12 +31,9 @@ public class Swing2048 extends JFrame implements Observer {
     private final JLabel score;
     private final JLabel titre;
 
-    
     private final JLabel bestScore;
     private Game game;
     private int best_score = 0;
-
-   
 
     public Swing2048(Game _game) {
         game = _game;
@@ -49,7 +46,6 @@ public class Swing2048 extends JFrame implements Observer {
         best_score = BestScore.get_bestScore();
 
         JPanel contentGrid = new JPanel(new GridLayout(game.getSize(), game.getSize()));
-        
 
         for (int i = 0; i < game.getSize(); i++) {
             for (int j = 0; j < game.getSize(); j++) {
@@ -63,41 +59,39 @@ public class Swing2048 extends JFrame implements Observer {
                 contentGrid.add(tabC[i][j]);
             }
         }
-        
+
         JPanel contentScore = new JPanel(new BorderLayout());
         // Currente Score
         JPanel contentCurrentScore = new JPanel();
-        score = new JLabel( "Score : "+ String.valueOf(game.score) );
+        score = new JLabel("Score : " + String.valueOf(game.score));
         contentCurrentScore.add(score);
-        // best score 
+        // best score
         JPanel contentBestScore = new JPanel();
-        bestScore = new JLabel( "Best Score : "+ String.valueOf(best_score));
-        contentBestScore.add( bestScore);
+        bestScore = new JLabel("Best Score : " + String.valueOf(best_score));
+        contentBestScore.add(bestScore);
 
         JPanel contentBesttitre = new JPanel();
-        titre = new JLabel( "Partie non sauvegardée");
-        contentBesttitre.add( titre);
-        contentScore.add(contentCurrentScore,BorderLayout.EAST);
-        contentScore.add(contentBestScore,BorderLayout.WEST);
-        contentScore.add(contentBesttitre,BorderLayout.CENTER);
+        titre = new JLabel("Partie non sauvegardée");
+        contentBesttitre.add(titre);
+        contentScore.add(contentCurrentScore, BorderLayout.EAST);
+        contentScore.add(contentBestScore, BorderLayout.WEST);
+        contentScore.add(contentBesttitre, BorderLayout.CENTER);
 
-
-       
         JPanel contentPane = new JPanel(new BorderLayout());
-        contentPane.add(contentGrid,BorderLayout.CENTER);
-        contentPane.add(contentScore,BorderLayout.NORTH);
+        contentPane.add(contentGrid, BorderLayout.CENTER);
+        contentPane.add(contentScore, BorderLayout.NORTH);
         setContentPane(contentPane);
         addKeyboardListener();
         refresh();
 
     }
-    
-    private void refreshVue(){   // utiliser quand on change de partie 
+
+    private void refreshVue() { // utiliser quand on change de partie
         game.addObserver(this);
         refresh();
     }
 
-    private String askPlayer(String message, String value ){
+    private String askPlayer(String message, String value) {
         return JOptionPane.showInputDialog(message, value);
     }
 
@@ -106,7 +100,6 @@ public class Swing2048 extends JFrame implements Observer {
         JMenu gameMenu = new JMenu("Game");
         JMenuItem restartItem = new JMenuItem("Restart");
         JMenu chargerItem = new JMenu("Charger partie");
-        
 
         restartItem.addActionListener(new ActionListener() {
             @Override
@@ -115,78 +108,86 @@ public class Swing2048 extends JFrame implements Observer {
                 titre.setText("Partie non sauvegardée");
             }
         });
-        
+
         JMenuItem saveItem = new JMenuItem("Sauver la partie");
         saveItem.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                // si on est déjà sauvegardé
+                String nomSave;
+                if (titre.getText() == "Partie non sauvegardée") {
+                    nomSave = askPlayer("Le nom de ta sauvegarde ?", "");
+                } else {
+                    nomSave = titre.getText();
+                }
 
-                String nomSave = askPlayer("Le nom de ta sauvegarde ?","");
-
-                File fichier =  new File("partie/"+nomSave+".ser") ;
+                File fichier = new File("partie/" + nomSave + ".ser");
                 // ouverture d'un flux sur un fichier
                 ObjectOutputStream oos;
                 try {
                     oos = new ObjectOutputStream(new FileOutputStream(fichier));
                     // sérialization de l'objet
-                    oos.writeObject(game) ;
+                    oos.writeObject(game);
                     oos.close();
+                    if (titre.getText() == "Partie non sauvegardée") {
+                        JMenuItem Item = new JMenuItem(nomSave); // ici j'ajoute cette sauvegarde à la liste afficher
+                                                                 // (ce code est à améliorer par le future)
+                        Item.addActionListener(new ActionListener() {
+                            @Override
+                            public void actionPerformed(ActionEvent e) {
+                                File fichier = new File("partie/" + nomSave + ".ser");
+                                try {
+                                    // ouverture d'un flux sur un fichier
+                                    ObjectInputStream ois = new ObjectInputStream(new FileInputStream(fichier));
 
-                    JMenuItem Item = new JMenuItem(  nomSave  );    // ici j'ajoute cette sauvegarde à la liste afficher (ce code est à améliorer par le future)
-                    Item.addActionListener(new ActionListener() {
-                        @Override
-                        public void actionPerformed(ActionEvent e) {
-                            File fichier =  new File("partie/"+nomSave+".ser") ;
-                            try {
-                                // ouverture d'un flux sur un fichier
-                                ObjectInputStream ois =  new ObjectInputStream(new FileInputStream(fichier)) ;
-
-                                // désérialization de l'objet
-                                game = (Game)ois.readObject() ;
-                                ois.close();
-                                titre.setText( nomSave);
-                            } catch (FileNotFoundException e1) {
-                                e1.printStackTrace();
-                            } catch (IOException e1) {
-                                e1.printStackTrace();
-                            }catch (ClassNotFoundException e1) {
-                                e1.printStackTrace();
+                                    // désérialization de l'objet
+                                    game = (Game) ois.readObject();
+                                    ois.close();
+                                    titre.setText(nomSave);
+                                } catch (FileNotFoundException e1) {
+                                    e1.printStackTrace();
+                                } catch (IOException e1) {
+                                    e1.printStackTrace();
+                                } catch (ClassNotFoundException e1) {
+                                    e1.printStackTrace();
+                                }
+                                refreshVue();
                             }
-                            refreshVue();
-                        }
-                    });
-                    chargerItem.add(Item);
-                    titre.setText(nomSave);
+                        });
+                        chargerItem.add(Item);
+                        titre.setText(nomSave);
+                    }
+
                 } catch (FileNotFoundException e1) {
                     e1.printStackTrace();
                 } catch (IOException e1) {
                     e1.printStackTrace();
                 }
-               
+
             }
         });
 
-        File dir  = new File("partie/");
+        File dir = new File("partie/");
         File[] liste = dir.listFiles();
-        for(File item : liste ){ // faire les propositions de partie enregister
-            JMenuItem Item = new JMenuItem(  item.getName().substring(0, item.getName().lastIndexOf('.')  ));  
+        for (File item : liste) { // faire les propositions de partie enregister
+            JMenuItem Item = new JMenuItem(item.getName().substring(0, item.getName().lastIndexOf('.')));
             Item.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    File fichier =  new File("partie/"+item.getName()) ;
+                    File fichier = new File("partie/" + item.getName());
                     try {
                         // ouverture d'un flux sur un fichier
-                        ObjectInputStream ois =  new ObjectInputStream(new FileInputStream(fichier)) ;
+                        ObjectInputStream ois = new ObjectInputStream(new FileInputStream(fichier));
 
                         // désérialization de l'objet
-                        game = (Game)ois.readObject() ;
+                        game = (Game) ois.readObject();
                         ois.close();
-                        titre.setText( item.getName().substring(0, item.getName().lastIndexOf('.')));
+                        titre.setText(item.getName().substring(0, item.getName().lastIndexOf('.')));
                     } catch (FileNotFoundException e1) {
                         e1.printStackTrace();
                     } catch (IOException e1) {
                         e1.printStackTrace();
-                    }catch (ClassNotFoundException e1) {
+                    } catch (ClassNotFoundException e1) {
                         e1.printStackTrace();
                     }
                     refreshVue();
@@ -199,18 +200,16 @@ public class Swing2048 extends JFrame implements Observer {
         gameMenu.add(saveItem);
         gameMenu.add(chargerItem);
 
-        
-        
         JMenu MoreMenu = new JMenu("More");
-        JMenuItem createrItem = new JMenuItem("Voir les créateurs"); 
+        JMenuItem createrItem = new JMenuItem("Voir les créateurs");
         createrItem.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
-                    URI uri2= new URI("https://www.linkedin.com/in/c%C3%A9lestin-deal-772ba9194/");
+                    URI uri2 = new URI("https://www.linkedin.com/in/c%C3%A9lestin-deal-772ba9194/");
                     java.awt.Desktop.getDesktop().browse(uri2);
-                    
-                    URI uri1= new URI("https://www.linkedin.com/in/robin-lusson-ba753019a/");
+
+                    URI uri1 = new URI("https://www.linkedin.com/in/robin-lusson-ba753019a/");
                     java.awt.Desktop.getDesktop().browse(uri1);
 
                 } catch (Exception problem) {
@@ -225,20 +224,21 @@ public class Swing2048 extends JFrame implements Observer {
         setJMenuBar(mb);
     }
 
-    private void manageScore(){  // à chaque tour on mets les scores à jour dans l'affichage et dans le fichier de sauvegarde du best score 
-        this.score.setText("Score : " + String.valueOf(game.score) );
+    private void manageScore() { // à chaque tour on mets les scores à jour dans l'affichage et dans le fichier
+                                 // de sauvegarde du best score
+        this.score.setText("Score : " + String.valueOf(game.score));
 
-        if (game.score > best_score ){
+        if (game.score > best_score) {
             BestScore.set_bestScore(game.score);
-            this.bestScore.setText("Best Score : "+ String.valueOf(game.score));
-            
+            this.bestScore.setText("Best Score : " + String.valueOf(game.score));
+
         }
     }
 
     /**
      * Correspond à la fonctionnalité de Vue : affiche les données du modèle
      */
-    private void refresh()  {
+    private void refresh() {
 
         // demande au processus graphique de réaliser le traitement
         SwingUtilities.invokeLater(() -> {
@@ -259,26 +259,35 @@ public class Swing2048 extends JFrame implements Observer {
             }
         });
         manageScore();
-        
+
     }
 
     /**
-     * Correspond à la fonctionnalité de Contrôleur : écoute les évènements, et déclenche des traitements sur le modèle
+     * Correspond à la fonctionnalité de Contrôleur : écoute les évènements, et
+     * déclenche des traitements sur le modèle
      */
     private void addKeyboardListener() {
-        addKeyListener(new KeyAdapter() { // new KeyAdapter() { ... } est une instance de classe anonyme, il s'agit d'un objet qui correspond au controleur dans MVC
+        addKeyListener(new KeyAdapter() { // new KeyAdapter() { ... } est une instance de classe anonyme, il s'agit d'un
+                                          // objet qui correspond au controleur dans MVC
             @Override
             public void keyPressed(KeyEvent e) {
-                switch(e.getKeyCode()) {  // on regarde quelle touche a été pressée
-                    case KeyEvent.VK_LEFT : game.actionPlayer(Direction.LEFT); break;
-                    case KeyEvent.VK_RIGHT : game.actionPlayer(Direction.RIGHT); break;
-                    case KeyEvent.VK_DOWN : game.actionPlayer(Direction.DOWN); break;
-                    case KeyEvent.VK_UP : game.actionPlayer(Direction.UP); break;
+                switch (e.getKeyCode()) { // on regarde quelle touche a été pressée
+                    case KeyEvent.VK_LEFT:
+                        game.actionPlayer(Direction.LEFT);
+                        break;
+                    case KeyEvent.VK_RIGHT:
+                        game.actionPlayer(Direction.RIGHT);
+                        break;
+                    case KeyEvent.VK_DOWN:
+                        game.actionPlayer(Direction.DOWN);
+                        break;
+                    case KeyEvent.VK_UP:
+                        game.actionPlayer(Direction.UP);
+                        break;
                 }
             }
         });
     }
-
 
     @Override
     public void update(Observable o, Object arg) {
