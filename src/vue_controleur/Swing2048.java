@@ -10,6 +10,7 @@ import javax.swing.border.Border;
 import java.awt.*;
 import java.awt.event.*;
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Observer;
 import java.io.File;
@@ -34,6 +35,7 @@ public class Swing2048 extends JFrame implements Observer {
     private final JLabel bestScore;
     private Game game;
     private int best_score = 0;
+    private ArrayList<String> namePartie  = new ArrayList<>();
 
     public Swing2048(Game _game) {
         game = _game;
@@ -95,6 +97,12 @@ public class Swing2048 extends JFrame implements Observer {
         return JOptionPane.showInputDialog(message, value);
     }
 
+    private int confirm() {
+        return JOptionPane.showConfirmDialog(this, 
+                        "Vous allez écraser une sauvegarde", "Attention", 
+                        JOptionPane.YES_NO_OPTION);
+    }
+
     private void addMenus() {
         JMenuBar mb = new JMenuBar();
         JMenu gameMenu = new JMenu("Game");
@@ -117,6 +125,15 @@ public class Swing2048 extends JFrame implements Observer {
                 String nomSave;
                 if (titre.getText() == "Partie non sauvegardée") {
                     nomSave = askPlayer("Le nom de ta sauvegarde ?", "");
+                    if (namePartie.contains(nomSave)){
+                        int answer = confirm();
+                
+                if (answer == JOptionPane.NO_OPTION) {
+                    // do something
+                } else if(answer == JOptionPane.YES_OPTION) {
+                      // do something else
+                }
+                    }
                 } else {
                     nomSave = titre.getText();
                 }
@@ -130,6 +147,7 @@ public class Swing2048 extends JFrame implements Observer {
                     oos.writeObject(game);
                     oos.close();
                     if (titre.getText() == "Partie non sauvegardée") {
+                        namePartie.add(nomSave);                 // on ajouter le nom de la partie à la list des noms de partie
                         JMenuItem Item = new JMenuItem(nomSave); // ici j'ajoute cette sauvegarde à la liste afficher
                                                                  // (ce code est à améliorer par le future)
                         Item.addActionListener(new ActionListener() {
@@ -170,6 +188,7 @@ public class Swing2048 extends JFrame implements Observer {
         File dir = new File("partie/");
         File[] liste = dir.listFiles();
         for (File item : liste) { // faire les propositions de partie enregister
+            namePartie.add(item.getName().substring(0, item.getName().lastIndexOf('.')));
             JMenuItem Item = new JMenuItem(item.getName().substring(0, item.getName().lastIndexOf('.')));
             Item.addActionListener(new ActionListener() {
                 @Override
